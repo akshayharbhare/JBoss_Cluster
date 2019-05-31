@@ -1,0 +1,5 @@
+/subsystem=modcluster/mod-cluster-config=configuration:write-attribute(name=advertise-security-key, value=redhat)
+/subsystem=undertow/configuration=filter/mod-cluster=modcluster:add(management-socket-binding=http, advertise-socket-binding=modcluster, security-key=redhat)
+/subsystem=undertow/configuration=filter/mod-cluster=modcluster:add(management-socket-binding=http, advertise-socket-binding=modcluster, security-key=redhat)
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=modcluster:add
+:reload

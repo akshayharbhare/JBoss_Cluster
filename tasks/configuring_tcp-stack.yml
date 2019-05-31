@@ -1,0 +1,9 @@
+---
+
+- name: copying tcp stack file
+  copy:
+    src: new-tcp-stack.cli
+    dest: /tmp/new-tcp-stack.cli
+
+- name: running tcp stack cli file
+  command: /opt/jboss-eap-7.0/bin/jboss-cli.sh --connect --controller={{ master_ip }}:9990 --file=/tmp/new-tcp-stack.cli

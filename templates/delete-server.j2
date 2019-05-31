@@ -1,0 +1,40 @@
+#!/bin/bash
+
+HOST_CONTROLLER=$1
+SERVER_NAME=$2
+JBOSS_HOME="/opt/jboss-eap-7.0/"
+CLI_COMMAND="$JBOSS_HOME/bin/jboss-cli.sh -c --controller={{ master_ip }}"
+
+function usage
+{
+  echo "Usage:"
+  echo "delete-server.sh <host-controller> <server-name>"
+  echo "This script deletes a server from a EAP 7 Host Controller."
+  echo -e
+}
+
+function delete_server
+{
+  echo -e
+  echo "  .  Stopping the $SERVER_NAME server ..."
+  echo -e
+  $CLI_COMMAND --command="/host=$HOST_CONTROLLER/server-config=$SERVER_NAME:stop(blocking=true)"
+  echo -e
+  echo "  .  Deleting the $SERVER_NAME from host $HOST_CONTROLLER ..."
+  echo -e
+  $CLI_COMMAND --command="/host=$HOST_CONTROLLER/server-config=$SERVER_NAME:remove()"
+  echo -e
+  echo "  .  Reloading the $HOST_CONTROLLER host controller ..." 
+  echo -e
+  $CLI_COMMAND --command="/host=$HOST_CONTROLLER:reload"
+  echo -e
+  echo "  Done"
+  
+}
+
+if [ $# -ne 2 ] ; then
+  usage
+  exit 2
+else
+  delete_server
+fi

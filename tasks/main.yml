@@ -1,0 +1,84 @@
+---
+# tasks file for workstation
+
+- name: setting the hostname of master node
+  hostname:
+    name: '{{ master_hostname }}'
+  when: inventory_hostname in groups['master']
+
+- name: setting the hostname of slave1 node
+  hostname:
+    name: '{{ slave1_hostname }}'
+  when: inventory_hostname in groups['slaveo']
+
+- name: setting the hostname of slave2 node
+  hostname:
+    name: '{{ slave2_hostname }}'
+  when: inventory_hostname in groups['slavet']
+
+- name: Add mappings to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ item.ip }} {{ item.name }} {{ item.fqdn }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+  with_items:
+    - { name: '{{ master_hostname }}', ip: '{{ master_ip }}', fqdn: '{{ master_fqdn }}' }
+    - { name: '{{ slave1_hostname }}', ip: '{{ slave1_ip }}', fqdn: '{{ slave1_fqdn }}' }
+    - { name: '{{ slave2_hostname }}', ip: '{{ slave2_ip }}', fqdn: '{{ slave2_fqdn }}' }
+
+
+- name: installing JBoss
+  include: jboss.yml
+
+- name: creating base directory for standalone server
+  command: cp -r /opt/jboss-eap-7.0/standalone /opt/
+
+#- name: configuring SSH
+#  include: ssh.yml
+
+- name: configuring Domain Environment
+  include: domain.yml
+
+- name: creating slave nodes
+  include: creating_slave.yml
+  when: inventory_hostname in groups['slaveo']
+
+- name: creating slave nodes
+  include: creating_slave.yml
+  when: inventory_hostname in groups['slavet']
+
+- name: configuring slave nodes
+  include: configuring_slave.yml
+
+#- name: running all domain servers
+#  include: run_server.yml
+
+#- name: deleting default servers
+#  include: delete_server.yml
+#  when: inventory_hostname in groups['master']
+
+#- name: deleting default groups
+#  include: delete_group.yml
+#  when: inventory_hostname in groups['master']
+
+#- name: running configuring tcp stack file
+#  include: configuring_tcp-stack.yml
+#  when: inventory_hostname in groups['master']
+
+
+#- name: configuring standalone server
+#  include: standalone.yml
+#  when: inventory_hostname in groups['master']
+
+#- name: running the load balancer
+#  include: run_load_balancer.yml
+#  when: inventory_hostname in groups['master']
+
+#- name: configuring modcluster subsystem on standalone
+#  include: configure_mod_stanalone.yml
+#  when: inventory_hostname in groups['master']
+
+#- name: configuring modcluster subsystem on domain
+#  include: configure_mod_domain.yml
+#  when: inventory_hostname in groups['master']

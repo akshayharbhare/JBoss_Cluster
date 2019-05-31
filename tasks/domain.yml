@@ -1,0 +1,49 @@
+---
+- name: creating domain directories for running server
+  command: cp -r /opt/jboss-eap-7.0/domain /opt/
+  when: inventory_hostname in groups['master']
+
+#  copy:
+#    src: /opt/jboss-eap-7.0/domain
+#    dest: /opt/domain
+#    remote_src: yes
+#    directory_mode: yes
+
+- name: Configuring host-master.xml file
+  lineinfile:
+    path: /opt/domain/configuration/host-master.xml
+    state: present
+    regexp: '127.0.0.1'
+    line: '<inet-address value="${jboss.bind.address.management:{{ master_ip }}}"/>'
+  when: inventory_hostname in groups['master']
+
+- name: configuring domain.xml file
+  copy:
+    src: domain.xml
+    dest: /opt/domain/configuration/domain.xml
+  when: inventory_hostname in groups['master']
+ 
+- name: installing firewalld service
+  yum:
+    name: firewalld
+    state: latest
+
+- name: start the firewalld service
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: managing ports with firewalld
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+    zone: public
+  with_items:
+  - "{{ ports_allow }}"
+
+- name: reloading firewalld service
+  service:
+    name: firewalld
+    state: reloaded

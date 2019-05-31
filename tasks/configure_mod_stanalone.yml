@@ -1,0 +1,8 @@
+---
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller=localhost:10990 --command="/subsystem=modcluster/mod-cluster-config=configuration:write-attribute(name=advertise-security-key, value=redhat)"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller=localhost:10990 --command="/subsystem=undertow/configuration=filter/mod-cluster=modcluster:add(management-socket-binding=http,advertise-socket-binding=modcluster,security-key=redhat)"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller=localhost:10990 --command="/subsystem=undertow/server=default-server/host=default-host/filter-ref=modcluster:add"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller=localhost:10990 --command=":reload"

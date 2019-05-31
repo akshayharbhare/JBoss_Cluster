@@ -1,0 +1,21 @@
+---
+- name: configuring ip address on servera
+  replace:
+    dest: /opt/domain/configuration/host-slave.xml
+    regexp: '192.168.10.171'
+    replace: '{{ slave1_ip }}'
+  when: inventory_hostname in groups['slaveo']
+
+- name: configuring server name on serverb
+  replace:
+    dest: /opt/domain/configuration/host-slave.xml
+    regexp: 'servera'
+    replace: 'serverb'
+  when: inventory_hostname in groups['slavet']
+
+- name: configuring ip address on serverb
+  replace:
+    dest: /opt/domain/configuration/host-slave.xml
+    regexp: '192.168.10.171'
+    replace: '{{ slave2_ip }}'
+  when: inventory_hostname in groups['slavet']

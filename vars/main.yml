@@ -1,0 +1,11 @@
+---
+# vars file for workstation
+
+java_pkgs:
+- java-1.8.0-openjdk
+- java-1.8.0-openjdk-devel
+
+ports_allow:
+- 9990/tcp
+- 9999/tcp
+- 8080/tcp

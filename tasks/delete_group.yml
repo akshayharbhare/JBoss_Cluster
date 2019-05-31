@@ -1,0 +1,17 @@
+---
+
+- name: copying delete group script on machine
+  template:
+    src: delete-server-group.j2
+    dest: /root/delete-server-group.sh
+
+- name: changing permission for delete group file
+  file:
+    path: /root/delete-server-group.sh
+    mode: 0755
+
+- name: deleting main-server-group
+  command: /root/delete-server-group.sh main-server-group
+
+- name: deleting other-server-group
+  command: /root/delete-server-group.sh other-server-group

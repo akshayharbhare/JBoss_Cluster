@@ -1,0 +1,3 @@
+---
+- name: copying standalone directory on the workstation as /opt/lb
+  command: cp -r /opt/jboss-eap-7.0/standalone /opt/lb

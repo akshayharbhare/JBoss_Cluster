@@ -1,0 +1,32 @@
+# Add a new TCP stack called "tcpping"
+batch
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add()
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="TCPPING")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping"/transport="TRANSPORT":add(socket-binding="jgroups-tcp",type="TCP")
+run-batch
+
+# Customize the protocol settings for tcpping
+batch
+
+###### CHANGE THIS LINE FOR CLUSTERING LAB #############
+
+/profile=full-ha/subsystem="jgroups"/stack="tcpping"/protocol="TCPPING"/property="initial_hosts":add(value="servera[7600],servera[7700],serverb[7600],serverb[7700]")
+
+###### CHANGE THIS LINE FOR CLUSTERING LAB #############
+
+/profile=full-ha/subsystem="jgroups"/stack="tcpping"/protocol="TCPPING"/property="port_range":add(value="10")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="MERGE3")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(socket-binding="jgroups-tcp-fd",type="FD_SOCK")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="FD")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="VERIFY_SUSPECT")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="pbcast.NAKACK2")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="UNICAST3")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="pbcast.STABLE")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="pbcast.GMS")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="MFC")
+/profile=full-ha/subsystem="jgroups"/stack="tcpping":add-protocol(type="FRAG2")
+/profile=full-ha/subsystem=jgroups/channel=ee:write-attribute(name=stack,value=tcpping)
+/profile=full-ha/subsystem=jgroups:write-attribute(name=default-stack,value=tcpping)
+run-batch
+
+reload --host=master

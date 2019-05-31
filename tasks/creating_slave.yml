@@ -1,0 +1,15 @@
+---
+- name: creating slave node
+  copy:
+    src: domain.tar
+    dest: /opt/domain.tar
+
+- name: extracting domain directory
+  command: tar -xf domain.tar
+  args:
+    chdir: /opt/
+
+- name: removing domain tar
+  file:
+    path: /opt/domain.tar
+    state: absent

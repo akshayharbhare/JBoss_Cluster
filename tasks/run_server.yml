@@ -1,0 +1,12 @@
+---
+- name: running domain master node server
+  command: /opt/jboss-eap-7.0/bin/domain.sh -Djboss.domain.base.dir=/opt/domain/ --host-config=host-master.xml &
+  when: inventory_hostname in groups['master']
+
+- name: running domain slave1 node server
+  shell: "/opt/jboss-eap-7.0/bin/domain.sh -Djboss.domain.base.dir=/opt/domain/ --host-config=host-slave.xml -Djboss.domain.master.address={{ master_ip }} -Djboss.node.name=servera &"
+  when: inventory_hostname in groups['slaveo']
+
+- name: running domain slave2 node server
+  shell: "/opt/jboss-eap-7.0/bin/domain.sh -Djboss.domain.base.dir=/opt/domain/ --host-config=host-slave.xml -Djboss.domain.master.address={{ master_ip }} -Djboss.node.name=serverb &"
+  when: inventory_hostname in groups['slavet']

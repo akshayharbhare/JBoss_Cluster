@@ -1,0 +1,12 @@
+---
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller='{{ master_ip }}':9990 --command="/profile=full-ha/subsystem=modcluster/mod-cluster-config=configuration:write-attribute(name=advertise,value=false)"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller='{{ master_ip }}':9990 --command="/socket-binding-group=full-ha-sockets/remote-destination-outbound-socket-binding=lb:add(host={{ master_ip }},port=9080)
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller='{{ master_ip }}':9990 --command="/profile=full-ha/subsystem=modcluster/mod-cluster-config=configuration:list-add(name=proxies,value=lb)"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller='{{ master_ip }}':9990 --command="reload --host=servera"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller='{{ master_ip }}':9990 --command="reload --host=serverb"
+
+- command: /opt/jboss-eap-7.0/bin/jboss-cli.sh -c --controller='{{ master_ip }}':9990 --command="reload --host=master"

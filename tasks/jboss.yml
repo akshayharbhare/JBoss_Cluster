@@ -1,0 +1,36 @@
+---
+- name: Installing JAVA
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - "{{ java_pkgs }}"
+
+- name: setting path to java 8
+  shell: export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s_/jre/bin/java__")
+
+- name: setting path for future reboots
+  lineinfile:
+    path: /etc/profile.d/java_18.sh
+    line: 'export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s_/jre/bin/java__")'
+    state: present
+    create: yes
+    mode: 0777
+
+- name: source the java file
+  shell: source /etc/profile.d/java_18.sh
+
+- name: Installing JBoss
+  copy:
+    src: jboss-eap-7.0.tar
+    dest: /opt/jboss-eap-7.0.tar
+
+- name: unarchieve applications
+  command: tar -xf jboss-eap-7.0.tar
+  args:
+    chdir: /opt/
+
+- name: removing copied tar file
+  file:
+    path: /opt/jboss-eap-7.0.tar
+    state: absent

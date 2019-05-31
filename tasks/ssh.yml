@@ -1,0 +1,44 @@
+---
+
+- name: generating keys
+  command: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+  ignore_errors: yes
+  when: inventory_hostname in groups['master']
+
+- name: fetch all public ssh keys
+  shell: cat /root/.ssh/id_rsa.pub
+  register: ssh_keys
+  when: inventory_hostname in groups['master']
+
+
+- name: copying ssh key file to localhost
+  lineinfile:
+    line: "{{ ssh_keys.stdout }}"
+    path: /tmp/id_rsa.pub
+    create: yes
+  delegate_to: 127.0.0.1
+  when: inventory_hostname in groups['master']
+
+
+
+- name: add .ssh directories on slave nodes
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: 0700
+    owner: root
+    group: root
+  when: inventory_hostname in groups['slave']
+
+- name: copying ssh copy id on slave nodes
+  copy:
+    src: /tmp/id_rsa.pub
+    dest: /root/.ssh/authorized_keys
+    force: yes
+  when: inventory_hostname in groups['slave']
+
+- name: removing id_rsa.pub file from localhost
+  file:
+    path: /tmp/id_rsa.pub
+    state: absent
+  delegate_to: 127.0.0.1

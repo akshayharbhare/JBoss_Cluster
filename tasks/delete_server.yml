@@ -1,0 +1,22 @@
+---
+- name: copying delete server script on machine
+  template:
+    src: delete-server.j2
+    dest: /root/delete-server.sh
+
+- name: changing permission for delete server file
+  file:
+    path: /root/delete-server.sh
+    mode: 0755
+
+- name: deleting server-one
+  command: /root/delete-server.sh servera server-one
+
+- name: deleting server-two
+  command: /root/delete-server.sh servera server-two
+
+- name: deleting server-one
+  command: /root/delete-server.sh serverb server-one
+
+- name: deleting server-two
+  command: /root/delete-server.sh serverb server-two

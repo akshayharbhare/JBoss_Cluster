@@ -1,0 +1,31 @@
+#!/bin/bash
+
+SERVER_GROUP=$1
+JBOSS_HOME="/opt/jboss-eap-7.0/"
+CLI_COMMAND="$JBOSS_HOME/bin/jboss-cli.sh -c --controller={{ master_ip }}"
+
+function usage
+{
+  echo "Usage:"
+  echo "delete-server-group.sh <server-group>"
+  echo "This script deletes a server group from a EAP 7 Host Controller."
+  echo -e
+}
+
+function delete_server_group
+{
+  echo -e
+  echo "  .  Deleting the $SERVER_GROUP server group ..."
+  echo -e
+  $CLI_COMMAND --command="/server-group=$SERVER_GROUP:remove()"
+  echo -e
+  echo "  Done"
+  
+}
+
+if [ $# -ne 1 ] ; then
+  usage
+  exit 1
+else
+  delete_server_group
+fi
